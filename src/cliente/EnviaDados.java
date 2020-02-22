@@ -38,8 +38,7 @@ public class EnviaDados implements Runnable {
 				//saida.write(dado1);
 				//saida.flush();
 				
-				byte[] dado = Util.protocoloLeitura(27, Tipo.ENVIA_BYTE, (short) 36, (short) 68, (byte) 0);
-				System.out.println(Arrays.toString(dado));
+				byte[] dado = Util.protocoloLeitura(27, Tipo.RECEBE_FLOAT, (short) 36, (short) 68, (byte) 0);
 				
 				short valor = (short) ((dado[0] << 4) + ((dado[1] >> 4) & 0x0F));
 				byte tipo = (byte) (dado[1] & 0x0F);
@@ -47,14 +46,20 @@ public class EnviaDados implements Runnable {
 				short offsetDb = (short) ((dado[5] << 5) + ((dado[6] >> 3) & 31));
 				byte nBit = (byte) (dado[6] & 07);
 				
-				System.out.println(valor);
-				System.out.println(tipo);
-				System.out.println(db);
-				System.out.println(offsetDb);
-				System.out.println(nBit);
+				//System.out.println(valor);
+				//System.out.println(tipo);
+				//System.out.println(db);
+				//System.out.println(offsetDb);
+				//System.out.println(nBit);
+				
+				saida.write(dado);
+				
 				Thread.sleep(1000);
 
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

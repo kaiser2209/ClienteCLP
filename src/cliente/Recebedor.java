@@ -24,19 +24,15 @@ public class Recebedor implements Runnable {
 	public void run() {
 		try {
 			while(true) {
-				byte[] b = new byte[13];
-				servidor.read(b);
+				byte[] transacao = new byte[2];
+				servidor.read(transacao);
+				byte tamanho = servidor.readByte();
+				byte[] valor = new byte[tamanho];
+				servidor.read(valor);
 				
-				byte tipo = b[8];
-				byte[] valor = Arrays.copyOfRange(b, 9, 13);
-				//short resultado = (short) ByteBuffer.wrap(valor).getInt();
-				//System.out.println(resultado);
-				//System.out.println(Arrays.toString(valor));
-				//System.out.println(trataResultado(tipo, valor));
-				salvaHashMap(b);
-				dados.forEach((key, value) ->  {
-					System.out.println(key + ": " + value);
-				}) ;
+				System.out.print(Arrays.toString(transacao));
+				System.out.print(tamanho);
+				System.out.println(Arrays.toString(valor));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
