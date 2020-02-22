@@ -38,21 +38,25 @@ public class EnviaDados implements Runnable {
 				//saida.write(dado1);
 				//saida.flush();
 				
-				byte[] dado = Util.protocoloLeitura(27, Tipo.RECEBE_FLOAT, (short) 36, (short) 68, (byte) 0);
-				
-				short valor = (short) ((dado[0] << 4) + ((dado[1] >> 4) & 0x0F));
-				byte tipo = (byte) (dado[1] & 0x0F);
-				short db = (short) ((dado[3] << 8) + dado[4]);
-				short offsetDb = (short) ((dado[5] << 5) + ((dado[6] >> 3) & 31));
-				byte nBit = (byte) (dado[6] & 07);
+				byte[] dado = Util.protocoloLeitura(27, Tipo.RECEBE_FLOAT, (short) 1, (short) 2, (byte) 0);
+				byte[] dado1 = Util.protocoloLeitura(28, Tipo.RECEBE_INT, (short) 1, (short) 0, (byte) 0);
+				//short valor = (short) ((dado[0] << 4) + ((dado[1] >> 4) & 0x0F));
+				//byte tipo = (byte) (dado[1] & 0x0F);
+				//short db = (short) ((dado[3] << 8) + dado[4]);
+				//short offsetDb = (short) ((dado[5] << 5) + ((dado[6] >> 3) & 31));
+				//byte nBit = (byte) (dado[6] & 07);
 				
 				//System.out.println(valor);
 				//System.out.println(tipo);
 				//System.out.println(db);
 				//System.out.println(offsetDb);
 				//System.out.println(nBit);
-				
+				System.out.println("Enviado 27: " + Arrays.toString(dado));
+				System.out.println("Enviado 28: " + Arrays.toString(dado1));
 				saida.write(dado);
+				saida.flush();
+				saida.write(dado1);
+				saida.flush();
 				
 				Thread.sleep(1000);
 

@@ -63,4 +63,17 @@ public class Util {
 	public static short bytesToShort(byte[] bytes) {
 		return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort();
 	}
+	
+	
+	public static float convertByteToFloat(byte[] b) {
+		return ByteBuffer.wrap(b).getFloat();
+	}
+	
+	public static int convertByteToInt(byte[] b) {
+		return ByteBuffer.wrap(b).getShort();
+	}
+	
+	public static int convertByteToUInt(byte[] b) {
+		return ByteBuffer.wrap(b).getInt();
+	}
 }

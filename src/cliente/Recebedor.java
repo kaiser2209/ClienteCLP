@@ -9,15 +9,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import tipos.Tipo;
+import tipos.TipoNumero;
 import util.Util;
 
 public class Recebedor implements Runnable {
 	private DataInputStream servidor;
-	private static Map<String, String> dados;
+	private static Map<Integer, String> dados;
 	
 	public Recebedor(DataInputStream servidor) {
 		this.servidor = servidor;
-		dados = new HashMap<String, String>();
+		dados = new HashMap<Integer, String>();
 	}
 	
 	@Override
@@ -30,9 +32,31 @@ public class Recebedor implements Runnable {
 				byte[] valor = new byte[tamanho];
 				servidor.read(valor);
 				
-				System.out.print(Arrays.toString(transacao));
-				System.out.print(tamanho);
-				System.out.println(Arrays.toString(valor));
+				//float res = ByteBuffer.wrap(valor).getFloat();
+				salvaHashMap(transacao, valor);
+				int id = ((transacao[0] << 4) & 0xFFF0) + ((transacao[1] >> 4) & 0x000F);
+				System.out.print("Recebido " + id + ": [");
+				for (int i = 0; i < tamanho + 3; i++) {
+					if (i < 2) {
+						if (i > 0) {
+							System.out.print(", ");
+						}
+						System.out.print(transacao[i]);
+					} else if (i < 3) {
+						System.out.print(", " + tamanho);
+					} else {
+						System.out.print(", " + valor[i - 3]);
+					}
+				}
+				System.out.println("]");
+				
+				dados.forEach((key, value) -> {
+					System.out.print(key + ": ");
+					System.out.println(value);
+				}); 
+				
+				
+				//System.out.println(res);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -41,37 +65,39 @@ public class Recebedor implements Runnable {
 		
 	}
 	
-	public void salvaHashMap(byte[] protocolo) {
-		byte[] bId = Arrays.copyOfRange(protocolo, 0, 8);
-		String id = Util.bytesToString(bId);
-		byte tipo = protocolo[8];
-		byte[] valor = Arrays.copyOfRange(protocolo, 9, 13);
-		dados.put(id, trataResultado(tipo, valor));
+	public void salvaHashMap(byte[] transacao, byte[] valor) {
+		int id = ((transacao[0] << 4) & 0xFFF0) + ((transacao[1] >> 4) & 0x000F);
+		TipoNumero tipo = TipoNumero.fromId((transacao[1] & 0x000F));
+		String s = trataResultado(tipo, valor);
+		dados.put(id, s);
+		//System.out.println(id);
+		//System.out.println(tipo.getCode());
+		//byte tipo = protocolo[8];
+		//byte[] valor = Arrays.copyOfRange(protocolo, 9, 13);
+		//dados.put(id, trataResultado(tipo, valor));
 	}
 	
-	public String trataResultado(int tipo, byte[] dado) {
-		if (tipo == Util.WORD) {
-			return Integer.toString(convertByteToInt(dado));
-		} else if (tipo == Util.FLOAT) {
-			return String.format("%.2f", convertByteToFloat(dado));
+	public String trataResultado(TipoNumero tipo, byte[] dado) {
+		if (tipo == TipoNumero.BIT) {
+			
+		} else if (tipo == TipoNumero.BYTE) {
+			
+		} else if (tipo == TipoNumero.WORD) {
+			
+		} else if (tipo == TipoNumero.INT) {
+			return Integer.toString(Util.convertByteToInt(dado));
+		} else if (tipo == TipoNumero.DWORD) {
+			
+		} else if (tipo == TipoNumero.DINT) {
+			
+		} else if (tipo == TipoNumero.REAL) {
+			return String.format("%.2f", Util.convertByteToFloat(dado));
 		}
 		
 		return null;
 	}
 	
-	public float convertByteToFloat(byte[] b) {
-		return ByteBuffer.wrap(b).getFloat();
-	}
-	
-	public int convertByteToInt(byte[] b) {
-		return (short) convertByteToUInt(b);
-	}
-	
-	public int convertByteToUInt(byte[] b) {
-		return ByteBuffer.wrap(b).getInt();
-	}
-	
-	public static Map<String, String> getDados() {
+	public static Map<Integer, String> getDados() {
 		return dados;
 	}
 }
